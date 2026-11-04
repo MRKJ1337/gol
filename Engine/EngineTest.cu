@@ -43,54 +43,22 @@ TEST(EngineTest, Neighbors) {
   EXPECT_EQ(0, neighborsn);
 }
 
-TEST(EngineTest, CudaEngine) {
+TEST(EngineTest, Engine) {
   int lines = 5;
   int columns = 5;
   Grid grid(lines, columns);
   grid.reviveCell(0, 1);
   grid.reviveCell(1, 1);
   grid.reviveCell(2, 1);
-  grid.display();
 
-  Grid *gGrid = grid.toGPU();
+  grid = grid.calculateNextState();
+  int alive = 0;
+  alive += grid.isCellAlive(0, 1);
+  alive += grid.isCellAlive(2, 1);
 
-  calculateNextState(*gGrid);
+  alive += grid.isCellAlive(1, 0);
+  alive += grid.isCellAlive(1, 1);
+  alive += grid.isCellAlive(1, 2);
 
-  Grid *cGrid = gGrid->toCPU();
-  cGrid->display();
-
-  if(cGrid->isCellAlive(1, 0) &&
-     cGrid->isCellAlive(1, 1) &&
-     cGrid->isCellAlive(1, 2)
-  ) {
-    SUCCEED();
-  } else {
-    FAIL();
-  }
-}
-
-TEST(EngineTest, CudaEngineHugeGrid) {
-  int lines = 250;
-  int columns = 250;
-  Grid grid(lines, columns);
-  grid.reviveCell(0, 1);
-  grid.reviveCell(1, 1);
-  grid.reviveCell(2, 1);
-
-  Grid *gGrid = grid.toGPU();
-
-  calculateNextState(*gGrid);
-  calculateNextState(*gGrid);
-  calculateNextState(*gGrid);
-
-  Grid *cGrid = gGrid->toCPU();
-
-  if(cGrid->isCellAlive(1, 0) &&
-     cGrid->isCellAlive(1, 1) &&
-     cGrid->isCellAlive(1, 2)
-  ) {
-    SUCCEED();
-  } else {
-    FAIL();
-  }
+  EXPECT_EQ(3, alive);
 }

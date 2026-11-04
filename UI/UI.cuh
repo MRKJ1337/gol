@@ -29,4 +29,4 @@ private:
   TTF_Font* font;
 };
 
-void runUI(Grid &grid, int pixels_per_cell, int fps);
+void runUI(Grid grid, int pixels_per_cell, int fps);

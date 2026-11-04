@@ -74,7 +74,7 @@ void Framework::displayFPS(int fps) {
   SDL_RenderTexture(this->renderer, textTexture, NULL, &textRect);
 }
 
-void runUI(Grid &grid, int pixels_per_cell, int fps) {
+void runUI(Grid grid, int pixels_per_cell, int fps) {
   // Catch SIGINT signals
   signal(SIGINT, sigint_handler);
 
@@ -108,24 +108,19 @@ void runUI(Grid &grid, int pixels_per_cell, int fps) {
   uint32_t frameTime;
   int      estimated_fps;
 
-  Grid *gGrid = grid.toGPU();
-  Grid *cGrid = new Grid(grid);
-
   while (!(event.type == SDL_EVENT_QUIT) && running) {
     frameStart = SDL_GetTicks();
 
-    for(int l = 0; l < cGrid->getLines(); l++) {
-      for(int c = 0; c < cGrid->getColumns(); c++) {
-        struct SDL_Color *color = cGrid->isCellAlive(l, c) ? &color_alive : &color_dead;
+    for(int l = 0; l < grid.getLines(); l++) {
+      for(int c = 0; c < grid.getColumns(); c++) {
+        struct SDL_Color *color = grid.isCellAlive(l, c) ? &color_alive : &color_dead;
         fw.drawSquare(pixels_per_cell * l, pixels_per_cell * c, pixels_per_cell, *color);
       }
     }
     fw.displayFPS(estimated_fps);
     fw.refresh();
 
-    calculateNextState(*gGrid);
-    delete cGrid;
-    cGrid = gGrid->toCPU();
+    grid = grid.calculateNextState();
 
     // Cap FPS
     frameTime = SDL_GetTicks() - frameStart;

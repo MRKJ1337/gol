@@ -35,7 +35,7 @@ set(
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-set(USE_CUDA ON)
+set(USE_CUDA OFF)
 set(CMAKE_CUDA_ARCHITECTURES native)
 set_source_files_properties(${SRCS} PROPERTIES LANGUAGE CUDA)
 
